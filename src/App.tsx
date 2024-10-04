@@ -6,13 +6,14 @@ import IssuesTable from './comps/IssuesTable'
 import CreateIssueForm from './comps/CreateIssueForm'
 
 export default function App() {
-  const { fetchOptions } = useOptCtx()
+  const { fetchOptions, fetchTable } = useOptCtx()
 
   useEffect(() => {
     // Gonna use this one since I need an async func
     const spareFunc = async () => {
       console.log('App started, calling fetchOptions')
       fetchOptions()
+      fetchTable()
     }
 
     spareFunc()

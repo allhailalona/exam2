@@ -11,3 +11,10 @@ export type Options = {
   categories: CategoryRow[]; 
   tenants: TenantRow[];
 };
+
+export type IssuesTableRow = {
+  id: number, 
+  description: string, 
+  category: string, 
+  tenant: string
+}

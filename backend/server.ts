@@ -1,6 +1,6 @@
 import express, {Request, Response} from 'express'
 import cors from 'cors'
-import { fetchOptions, createIssue } from './utils'
+import { fetchOptions, fetchTable, createIssue } from './utils'
 
 const app = express()
 
@@ -14,6 +14,16 @@ app.get('/issues/fetch-options', async (req: Request, res: Response) => {
     res.status(200).json(options)
   } catch (err) {
     const message = err.message || 'unknown error'
+    res.status(500).json(message)
+  }
+})
+
+app.get('/issues/fetch-table', async (req: Request, res: Response) => {
+  try {
+    const table = await fetchTable()
+    res.status(200).json(table)
+  } catch (err) {
+    const message = err.message || 'unknown message'
     res.status(500).json(message)
   }
 })

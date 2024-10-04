@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Form, Select, Input, Button, notification } from 'antd';
+import { useNavigate } from 'react-router-dom'
 import { useOptCtx } from '../context/OptionsContext';
 
 export default function CreateIssueForm() {
@@ -8,6 +9,7 @@ export default function CreateIssueForm() {
   const [selectedTenant, setSelectedTenant] = useState<string>('');
 
   const { fetchedCategories, fetchedTenants } = useOptCtx();
+  const navigate = useNavigate()
 
   // Helper function to trigger notification
   const openNotificationWithIcon = (type: 'success' | 'error', message: string, description: string) => {
@@ -39,6 +41,7 @@ export default function CreateIssueForm() {
         setSelectedTenant('');
 
         openNotificationWithIcon('success', 'Issue Created', 'Your issue has been successfully created.');
+        navigate('/')
       } else {
         const errorData = await res.json();
         openNotificationWithIcon('error', 'Submission Failed', `Error: ${errorData.message}`);
@@ -88,6 +91,11 @@ export default function CreateIssueForm() {
             </Select.Option>
           ))}
         </Select>
+      </Form.Item>
+      <Form.Item>
+        <Button type='primary' size='large' onClick={() => navigate('/')}>
+          Cancel
+        </Button>
       </Form.Item>
       <Form.Item>
         <Button type='primary' htmlType='submit' size='large'>
