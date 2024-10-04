@@ -12,7 +12,6 @@ const connection = await mysql.createConnection({
 
 export async function fetchOptions(): Promise<Options> {
   try {
-    // Don't forget types!
     const [categoryRows] = await connection.execute<CategoryRow[]>('SELECT category_name FROM categories')
     const categories = categoryRows.map((row: CategoryRow) => row.category_name)
 
@@ -24,6 +23,17 @@ export async function fetchOptions(): Promise<Options> {
     return toReturn
   } catch (err) {
     console.error('err in utils.ts fetchOptions func')
+    throw err
+  }
+}
+
+export async function createIssue(issueDesc: string, category: string, tenant: string) {
+  try {
+    const query = 'INSERT INTO issues (description, category, tenant) VALUES (?, ?, ?)'
+    await connection.execute(query, [issueDesc, category, tenant])
+    console.log('issue created')
+  } catch (err) {
+    console.error('err in createIssue utils.ts')
     throw err
   }
 }
