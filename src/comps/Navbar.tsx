@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Button, Select, Form, notification, Input } from 'antd';
+import { Button, Select, Form, notification, Input, Popconfirm } from 'antd';
 import { useOptCtx } from '../context/OptionsContext';
 
 export default function Navbar() {
@@ -79,19 +79,44 @@ export default function Navbar() {
     }
   }
 
+  const deleteAllIssues = async () => {
+    const res = await fetch('http://localhost:3000/issues/delete-issues', {
+      method: 'POST', 
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'deleteAll'})
+    })
+  }
+
   return (
     <div className='fixed top-0 left-0 right-0 z-50 bg-white p-2 px-4 h-[55px] flex items-center justify-between'>
       <div className="flex items-center">
         <Link to='/issues/create-issue'>
           <Button type="primary">Create Issue</Button>
         </Link>
-        <Button className='ml-4'>Delete all Issues</Button>
+        <Popconfirm
+          title="This action will delete all CURRENTLY DISPLAYED tasks, Do you want to proceed?"
+          placement='bottom'
+          onConfirm={deleteAllIssues}
+          onCancel={() => console.log('Deletion canceled')}
+          okText="Yes"
+          cancelText="No"
+          overlayStyle={{ width: '300px' }} // Set your desired width here
+        >
+          <Button className='ml-4'>Delete all Issues</Button>
+        </Popconfirm>
       </div>
       
       <div className="ml-4 flex-grow flex justify-between items-center gap-4">
         <Form onFinish={filterIssues} className='flex items-center'>
           <Form.Item name='categories' className='m-0 flex-grow'>
-            <Select mode="multiple" placeholder='Filter categories' style={{minWidth: '200px'}} />
+            <Select
+              mode="multiple"
+              placeholder='Filter categories' 
+              options={fetchedCategories.map((category: string) => ({key: category, value: category}))} 
+              style={{minWidth: '200px'}} 
+            />
           </Form.Item>
           <Form.Item className='m-0 ml-2'>
             <Button type='primary' htmlType='submit'>Filter</Button>

@@ -76,3 +76,27 @@ export async function createIssue(issueDesc: string, category: string, tenant: s
     throw err
   }
 }
+
+export async function deleteIssues(toDelete?: number) {
+  try {
+    if (toDelete) {  
+      const [res] = await connection.execute(
+        'DELETE FROM issues WHERE id = ?', 
+        [toDelete]
+      );
+      
+      // Check if the row was deleted
+      if (res.affectedRows === 0) {
+        throw new Error('Couldn\'t find specified row');
+      }
+      console.log(`Deleted row with id ${toDelete}`);
+    } else {
+      // Delete all rows
+      const [res] = await connection.execute('DELETE FROM issues');
+      console.log(`Deleted ${res.affectedRows} rows`);
+    }
+  } catch (error) {
+    console.error('Error deleting issues:', error);
+    throw error;
+  }
+}

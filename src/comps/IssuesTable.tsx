@@ -7,6 +7,16 @@
     const { fetchedTable, fetchedModTable } = useOptCtx()
     console.log('fetchedTable is', fetchedTable, 'fetchedFiltelred is', fetchedModTable)
 
+    const deleteAnIssue = async (toDelete: number) => {
+      const res = await fetch ('http://localhost:3000/issues/delete-issues', {
+        method: 'POST', 
+        headers: {
+          'Content-type': 'application/json'
+        }, 
+        body: JSON.stringify({action: 'deleteSpecific', toDelete})
+      })
+    }
+
     // Since it takes time to the data to load, we can't use Object.keys directly, and have to render something else until it loads....
     if (!fetchedTable || fetchedTable.length === 0) {
       return <div className='p-4'>No data available</div>
@@ -27,8 +37,9 @@
         title: 'Action',
         key: 'action',
         width: 20,
+        // The record is the selected row, the text is irrelevant in this scenario
         render: (text: string, record: IssuesTableRow) => (
-          <Button onClick={() => console.log('I want to delete', record.id)} type="link" danger>
+          <Button onClick={() => deleteAnIssue(record.id)} type="link" danger>
             X
           </Button>
         ),

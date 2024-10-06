@@ -1,6 +1,6 @@
 import express, {Request, Response} from 'express'
 import cors from 'cors'
-import { fetchOptions, fetchTable, createIssue, filterIssues, searchIssues } from './utils'
+import { fetchOptions, fetchTable, createIssue, filterIssues, searchIssues, deleteIssues } from './utils'
 
 const app = express()
 
@@ -62,6 +62,23 @@ app.post('/issues/create-issue', async (req: Request, res: Response) => {
     res.status(200).json('success')
   } catch (err) {
     const message = err.message || 'unknown error'
+    res.status(500).json(message)
+  }
+})
+
+app.post('/issues/delete-issues', async (req: Request, res: Response) => {
+  try {
+    console.log('req.body is', req.body)
+    // Pass relevant args
+    if (req.body.action === 'deleteAll') {
+      await deleteIssues()
+    } else if (req.body.action === 'deleteSpecific' && req.body.toDelete) {
+      await deleteIssues(req.body.toDelete)
+    }
+
+    
+  } catch (err) {
+    const message = err.message || 'unknown message' 
     res.status(500).json(message)
   }
 })
