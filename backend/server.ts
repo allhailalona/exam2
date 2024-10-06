@@ -1,6 +1,6 @@
 import express, {Request, Response} from 'express'
 import cors from 'cors'
-import { fetchOptions, fetchTable, createIssue, filterIssues } from './utils'
+import { fetchOptions, fetchTable, createIssue, filterIssues, searchIssues } from './utils'
 
 const app = express()
 
@@ -38,6 +38,17 @@ app.get('/issues/filter-issues', async (req: Request, res: Response) => {
 
     const filteredIssues = await filterIssues(categoryArray)
     res.status(200).json(filteredIssues)
+  } catch (err) {
+    const message = err.message || 'unknown error'
+    res.status(500).json(message)
+  }
+})
+
+app.get('/issues/search-issues', async (req: Request, res: Response) => {
+  try {
+    const query = req.query.query
+    const foundIssues = await searchIssues(query)
+    res.status(200).json(foundIssues)
   } catch (err) {
     const message = err.message || 'unknown error'
     res.status(500).json(message)

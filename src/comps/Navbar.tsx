@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Button, Select, Form, notification } from 'antd';
+import { Button, Select, Form, notification, Input } from 'antd';
 import { useOptCtx } from '../context/OptionsContext';
 
 export default function Navbar() {
-  const { fetchedCategories, setFetchedFilteredTable } = useOptCtx();
+  const { fetchedCategories, setFetchedModTable } = useOptCtx();
   console.log('hello from Navbar fc is', fetchedCategories);
 
   // Helper function to trigger notification
@@ -16,16 +16,16 @@ export default function Navbar() {
     });
   };
   
-
-  const filterIssues = async (values: {selected: string}) => {
-    const { selected } = values
-    console.log('hello from filterIssues', selected)
-    if (selected.length > 0) {
+  const filterIssues = async (values: {categories: string}) => {
+    const { categories } = values
+    console.log('hello from filterIssues', categories)
+    if (categories.length > 0) {
       // To add body in GET requests, we make use of queryParams
       const queryParams = new URLSearchParams({
         // Join selected categories with commas since the URL can't parse arrays syntax
-        categories: selected.join(','),
+        categories: categories.join(',')
       });
+      // Parse syntax to URLs syntax with toString()
       const url = `http://localhost:3000/issues/filter-issues?${queryParams.toString()}`;
       console.log('URL:', url);
 
@@ -44,38 +44,69 @@ export default function Navbar() {
 
       const data = await res.json()
       console.log('front after fetch data is', data)
-      setFetchedFilteredTable(data)
+      setFetchedModTable(data)
     } else {
-      setFetchedFilteredTable([]) // Retrieve complete table if there are no filters
+      setFetchedModTable([]) // Retrieve complete table if there are no filters
+    }
+  }
+
+  const searchIssues = async (values: {query: string}) => {
+    const { query } = values
+    console.log('query is', query)
+
+    if (query && query.trim() !== '') {
+      const queryParams = new URLSearchParams({
+        query: query
+      })
+      const url = `http://localhost:3000/issues/search-issues?${queryParams.toString()}`;
+      const res = await fetch(url, {
+        method: 'GET', 
+        headers: {
+          'Content-type': 'application/json'
+        }
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        openNotificationWithIcon('error', 'Submission Failed', `Error: ${errorData.message}`);
+        throw new Error (`Error 500 in front endpoint searchIssues in Navbar.tsx: the cause is ${errorData}`)
+      }
+
+      const data = await res.json()
+      setFetchedModTable(data)
+    } else {
+      setFetchedModTable([]) // Retrieve complete table if there are no query param
     }
   }
 
   return (
-    <div className='p-2 px-4 h-[35px] flex flex-row'>
-      <Link to='/issues/create-issue'>
-        <Button type="primary">Create Issue</Button>
-      </Link>
-      <Form
-        onFinish={filterIssues}
-        className='flex flex-row'
-      >
-        <Form.Item
-          name='selected'
-          className='min-w-[200px] max-w-[350px] ml-4'
-        >
-          <Select 
-            mode="multiple"
-            placeholder='Filter categories'
-            options={fetchedCategories.map((category: string[]) => ({ key: category, value: category }))} // Ensure options are formatted correctly
-          />
-        </Form.Item>
-        <Form.Item className='ml-2'>
-          <Button type='primary' htmlType='submit'>
-            Filter
-          </Button>
-        </Form.Item>
-      </Form>
+    <div className='fixed top-0 left-0 right-0 z-50 bg-white p-2 px-4 h-[55px] flex items-center justify-between'>
+      <div className="flex items-center">
+        <Link to='/issues/create-issue'>
+          <Button type="primary">Create Issue</Button>
+        </Link>
+        <Button className='ml-4'>Delete all Issues</Button>
+      </div>
       
+      <div className="ml-4 flex-grow flex justify-between items-center gap-4">
+        <Form onFinish={filterIssues} className='flex items-center'>
+          <Form.Item name='categories' className='m-0 flex-grow'>
+            <Select mode="multiple" placeholder='Filter categories' style={{minWidth: '200px'}} />
+          </Form.Item>
+          <Form.Item className='m-0 ml-2'>
+            <Button type='primary' htmlType='submit'>Filter</Button>
+          </Form.Item>
+        </Form>
+
+        <Form onFinish={searchIssues} className='flex items-center'>
+          <Form.Item name='query' className='m-0 flex-grow'>
+            <Input placeholder='Issue description' style={{minWidth: '200px'}} />
+          </Form.Item>
+          <Form.Item className='m-0 ml-2'>
+            <Button type='primary' htmlType='submit'>Search</Button>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 }

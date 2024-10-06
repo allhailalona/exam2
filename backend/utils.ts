@@ -52,6 +52,20 @@ export async function filterIssues(filterCategories: string[]) {
   }
 }
 
+export async function searchIssues(query: string) {
+  try {
+    const [rows] = await connection.execute(`
+      SELECT * 
+      FROM issues 
+      WHERE CONCAT_WS(' ', id, description, category, tenant) LIKE ?
+    `, [`%${query}%`]);
+    return rows
+  } catch (err) {
+    console.error('err in utils.ts searchIssues')
+    throw err
+  }
+}
+
 export async function createIssue(issueDesc: string, category: string, tenant: string) {
   try {
     const query = 'INSERT INTO issues (description, category, tenant) VALUES (?, ?, ?)'

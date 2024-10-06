@@ -5,8 +5,8 @@ const OptionsContext = createContext<{
   fetchedCategories: string[]
   fetchedTenants: string[]
   fetchedTable: IssuesTableRow[]
-  fetchedFilteredTable: IssuesTableRow[]
-  setFetchedFilteredTable: (table: IssuesTableRow[]) => void
+  fetchedModTable: IssuesTableRow[]
+  setFetchedModTable: (table: IssuesTableRow[]) => void
   fetchOptions: Promise<void>
   fetchTable: Promise<void>
 } | null>(null)
@@ -16,7 +16,7 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
   const [fetchedCategories, setFetchedCategories] = useState<string[]>([])
   const [fetchedTenants, setFetchedTenants] = useState<string[]>([])
   const [fetchedTable, setFetchedTable] = useState<IssuesTableRow[]>([])
-  const [fetchedFilteredTable, setFetchedFilteredTable] = useState<IssuesTableRow[]>([])
+  const [fetchedModTable, setFetchedModTable] = useState<IssuesTableRow[]>([])
 
   const fetchOptions = async (): Promise<void> => {
     const res = await fetch('http://localhost:3000/issues/fetch-options', {method: 'GET'})
@@ -44,7 +44,7 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <OptionsContext.Provider value={{fetchedCategories, fetchedTenants, fetchedTable, fetchedFilteredTable, setFetchedFilteredTable, fetchOptions, fetchTable}}>
+    <OptionsContext.Provider value={{fetchedCategories, fetchedTenants, fetchedTable, fetchedModTable, setFetchedModTable, fetchOptions, fetchTable}}>
       {children}
     </OptionsContext.Provider>
   )
