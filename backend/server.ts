@@ -1,13 +1,12 @@
 import express, {Request, Response} from 'express'
 import cors from 'cors'
-import { fetchOptions, fetchTable, createIssue } from './utils'
+import { fetchOptions, fetchTable, createIssue, filterIssues } from './utils'
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 
-// Don't forget types!!!
 app.get('/issues/fetch-options', async (req: Request, res: Response) => {
   try {
     const options = await fetchOptions()
@@ -24,6 +23,23 @@ app.get('/issues/fetch-table', async (req: Request, res: Response) => {
     res.status(200).json(table)
   } catch (err) {
     const message = err.message || 'unknown message'
+    res.status(500).json(message)
+  }
+})
+
+app.get('/issues/filter-issues', async (req: Request, res: Response) => {
+  try {
+    // Recieve data from query params as string
+    const categories = req.query.categories as string
+
+    // Convert it to an array
+    const categoryArray = categories ? categories.split(',') : [];
+    console.log('hello from server ', categoryArray)
+
+    const filteredIssues = await filterIssues(categoryArray)
+    res.status(200).json(filteredIssues)
+  } catch (err) {
+    const message = err.message || 'unknown error'
     res.status(500).json(message)
   }
 })

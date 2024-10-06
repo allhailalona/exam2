@@ -4,25 +4,23 @@
   import { IssuesTableRow } from '../../types'
 
   export default function IssuesTable() {
-    const { fetchedTable } = useOptCtx()
-    console.log('hello IssuesTable', fetchedTable)
+    const { fetchedTable, fetchedFilteredTable } = useOptCtx()
+    console.log('fetchedTable is', fetchedTable, 'fetchedFiltelred is', fetchedFilteredTable)
 
     // Since it takes time to the data to load, we can't use Object.keys directly, and have to render something else until it loads....
     if (!fetchedTable || fetchedTable.length === 0) {
       return <div className='p-4'>No data available</div>
     }
 
-    const clonedTable = cloneDeep(fetchedTable)
+    const dataToDisplay = fetchedFilteredTable.length > 0 ? fetchedFilteredTable : fetchedTable;
+    const clonedTable = cloneDeep(dataToDisplay)
     
     const dataSource = clonedTable.map((row: IssuesTableRow) => ({
       ...row,
       key: row.id
     }))
-    console.log('dataSource is', dataSource)
-
 
     const headers = Object.keys(clonedTable[0])
-    console.log('headers are', headers)
 
     const columns = [
       {
@@ -41,8 +39,6 @@
         key: header
       }))
     ]
-
-    console.log('columns are', columns)
 
     return (
       <Table className='p-4' dataSource={dataSource} columns={columns}/>

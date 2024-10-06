@@ -1,10 +1,12 @@
 import { createContext, useContext, useState } from 'react'
-import { IssuessTableRow } from '../../types'
+import { IssuesTableRow } from '../../types'
 
 const OptionsContext = createContext<{
   fetchedCategories: string[]
   fetchedTenants: string[]
-  fetchedTable: IssuessTableRow[]
+  fetchedTable: IssuesTableRow[]
+  fetchedFilteredTable: IssuesTableRow[]
+  setFetchedFilteredTable: (table: IssuesTableRow[]) => void
   fetchOptions: Promise<void>
   fetchTable: Promise<void>
 } | null>(null)
@@ -13,7 +15,8 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
   // Don't forget type annotation
   const [fetchedCategories, setFetchedCategories] = useState<string[]>([])
   const [fetchedTenants, setFetchedTenants] = useState<string[]>([])
-  const [fetchedTable, setFetchedTable] = useState<IssuessTableRow[]>([])
+  const [fetchedTable, setFetchedTable] = useState<IssuesTableRow[]>([])
+  const [fetchedFilteredTable, setFetchedFilteredTable] = useState<IssuesTableRow[]>([])
 
   const fetchOptions = async (): Promise<void> => {
     const res = await fetch('http://localhost:3000/issues/fetch-options', {method: 'GET'})
@@ -41,7 +44,7 @@ export function OptionsProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <OptionsContext.Provider value={{fetchedCategories, fetchedTenants, fetchedTable, fetchOptions, fetchTable}}>
+    <OptionsContext.Provider value={{fetchedCategories, fetchedTenants, fetchedTable, fetchedFilteredTable, setFetchedFilteredTable, fetchOptions, fetchTable}}>
       {children}
     </OptionsContext.Provider>
   )
