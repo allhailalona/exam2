@@ -1,5 +1,5 @@
 - figure out this connectoin.end() issue
-- refresh on navigate to load new issue auto
 
-- try to search out of the filtered and filter out of the searched
-- add a remove retrieve original table in a refresh button
+Various manipulations either get or post should only be on the currently showing files:
+  - search the filtered and filter the searched
+  - clear all only the files currently showing

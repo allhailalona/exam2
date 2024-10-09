@@ -32,6 +32,7 @@ export default function CreateIssueForm() {
       if (res.ok) {
         openNotificationWithIcon('success', 'Issue Created', 'Your issue has been successfully created.');
         navigate('/');
+        window.location.reload(true);
       } else {
         const errorData = await res.json();
         openNotificationWithIcon('error', 'Submission Failed', `Error: ${errorData.message}`);

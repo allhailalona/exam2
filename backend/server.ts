@@ -75,8 +75,7 @@ app.post('/issues/delete-issues', async (req: Request, res: Response) => {
     } else if (req.body.action === 'deleteSpecific' && req.body.toDelete) {
       await deleteIssues(req.body.toDelete)
     }
-
-    
+    res.status(200).json('delete successful')
   } catch (err) {
     const message = err.message || 'unknown message' 
     res.status(500).json(message)

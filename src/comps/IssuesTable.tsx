@@ -15,6 +15,7 @@
         }, 
         body: JSON.stringify({action: 'deleteSpecific', toDelete})
       })
+      window.location.reload(true);
     }
 
     // Since it takes time to the data to load, we can't use Object.keys directly, and have to render something else until it loads....

@@ -7,7 +7,7 @@ export default function Navbar() {
   console.log('hello from Navbar fc is', fetchedCategories);
 
   // Helper function to trigger notification
-  const openNotificationWithIcon = (type: 'success' | 'error', message: string, description: string) => {
+  const openNotificationWithIcon = (type: 'success' | 'error', message: string, description?: string) => {
     notification[type]({
       message: message,
       description: description,
@@ -43,9 +43,15 @@ export default function Navbar() {
       }
 
       const data = await res.json()
-      console.log('front after fetch data is', data)
-      setFetchedModTable(data)
+      console.log(data)
+      if (data.length > 0) {
+        setFetchedModTable(data)
+      } else {
+        openNotificationWithIcon('error', 'No issues in filtered categories');
+      }
+      
     } else {
+      openNotificationWithIcon('success', 'Retrieved Original Table');
       setFetchedModTable([]) // Retrieve complete table if there are no filters
     }
   }
@@ -73,8 +79,13 @@ export default function Navbar() {
       }
 
       const data = await res.json()
-      setFetchedModTable(data)
+      if (data.length > 0) {
+        setFetchedModTable(data)
+      } else {
+        openNotificationWithIcon('error', 'No issues that match search query');
+      }
     } else {
+      openNotificationWithIcon('success', 'Retrieved Original Table');
       setFetchedModTable([]) // Retrieve complete table if there are no query param
     }
   }
@@ -87,7 +98,15 @@ export default function Navbar() {
       },
       body: JSON.stringify({ action: 'deleteAll'})
     })
+
+    if (!res.ok) {
+      const errorData = await res.json() 
+      throw new Error ('err in navbar.tsx deleteAllIssues', errorData)
+    }
+
+    window.location.reload(true);
   }
+
 
   return (
     <div className='fixed top-0 left-0 right-0 z-50 bg-white p-2 px-4 h-[55px] flex items-center justify-between'>
